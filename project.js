@@ -1,7 +1,6 @@
 var hapi=require('@hapi/hapi');
 require("dotenv").config();
 var mysql=require('mysql');
-var Joi = require('@hapi/joi');
 
 var server=new hapi.Server({
     host:'localhost',
