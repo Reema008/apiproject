@@ -40,53 +40,36 @@ server.route({
 server.route({
   method:"POST",
   path:"/api/producers/",
+  options: {
+      validate: {
+        payload: {
+          producerName: Joi.string().max(31).required(),
+          passwordHash: Joi.string().max(20).required(),
+          twitterName: Joi.string().max(15).required(),
+          soundcloudName: Joi.string().max(31).required(),
+          email: Joi.string().max(255).required(),
+          producerStatus: Joi.string().required()
+        }
+      }
+    },
   handler:(request,reply)=>{
     var errors=[];
     var c=1;
     var name=request.payload.producerName;
     var mail=request.payload.email;
-    var password=request.payload.passwordHash;
-    var twitter=request.payload.twitterName;
-    var soundcloud=request.payload.soundcloudName;
     var status=request.payload.producerStatus;
-    if((name.length==1)||(mail.length==1)||(password.length==1)||(twitter.length==1)||(soundcloud.length==1)){
-      return "ALL THE FIELDS MUST BE FILLED";
-    }
-else{
-    if(name.length>=32){
-      errors.push("Name should contain less than 32 characters")
-      c++;
-    }
     if(name.includes("XxXxStr8FireXxX")==true){
       errors.push("Enter a valid name")
-      c++;
-    }
-    if(mail.length>=256){
-      errors.push("Mail should contain less than 256 characters")
       c++;
     }
     if((mail.includes('@')==false)||(mail.includes('.')==false)){
       errors.push("Enter a valid email")
       c++;
     }
-    if(password.length<=10){
-      errors.push("Enter a strong password ")
-      c++;
-    }
-    if(twitter.length>=16){
-      errors.push("Twitter Name must contain less than 16 characters")
-      c++;
-    }
-    if(soundcloud.length>=32){
-      errors.push("Sound Cloud Name must contain less than 32 characters")
-      c++;
-    }
     if((status!="none")&&(status!="not ready")&&(status!="featured")){
       errors.push("Not a valid status")
       c++;
     }
-  }
-
   if(c!=1)
       return errors;
     else
@@ -174,62 +157,45 @@ server.route({
 //1.5.PUT
 
 server.route({
-	method:"PUT",
-	path:"/api/producers/{id}",
-	handler:(request,reply)=>{
-		var errors=[];
-		var c=1;
-		var name=request.payload.producerName;
-		var mail=request.payload.email;
-		var password=request.payload.passwordHash;
-		var twitter=request.payload.twitterName;
-		var soundcloud=request.payload.soundcloudName;
-		var status=request.payload.producerStatus;
-		if((name.length==1)||(mail.length==1)||(password.length==1)||(twitter.length==1)||(soundcloud.length==1)){
-			return "ALL THE FIELDS MUST BE FILLED";
-		}
-else{
-		if(name.length>=32){
-			errors.push("Name should contain less than 32 characters")
-			c++;
-		}
-		if(name.includes("XxXxStr8FireXxX")==true){
-			errors.push("Enter a valid name")
-			c++;
-		}
-		if(mail.length>=256){
-			errors.push("Mail should contain less than 256 characters")
-			c++;
-		}
-		if((mail.includes('@')==false)||(mail.includes('.')==false)){
-			errors.push("Enter a valid email")
-			c++;
-		}
-		if(password.length<=10){
-			errors.push("Enter a strong password ")
-			c++;
-		}
-		if(twitter.length>=16){
-			errors.push("Twitter Name must contain less than 16 characters")
-			c++;
-		}
-		if(soundcloud.length>=32){
-			errors.push("Sound Cloud Name must contain less than 32 characters")
-			c++;
-		}
-		if((status!="none")&&(status!="not ready")&&(status!="featured")){
-			errors.push("Not a valid status")
-			c++;
-		}
-	}
-	
-		if(c!=1)
-			return errors;
-		else
-		{
-		var id=request.params.id;
-		var newProducer=request.payload;
-		
+  method:"PUT",
+  path:"/api/producers/{id}",
+  options: {
+      validate: {
+        payload: {
+          producerName: Joi.string().max(31).required(),
+          passwordHash: Joi.string().max(20).required(),
+          twitterName: Joi.string().max(15).required(),
+          soundcloudName: Joi.string().max(31).required(),
+          email: Joi.string().max(255).required(),
+          producerStatus: Joi.string().required()
+        }
+      }
+    },
+  handler:(request,reply)=>{
+    var errors=[];
+    var c=1;
+    var name=request.payload.producerName;
+    var mail=request.payload.email;
+    var status=request.payload.producerStatus;
+    if(name.includes("XxXxStr8FireXxX")==true){
+      errors.push("Enter a valid name")
+      c++;
+    }
+    if((mail.includes('@')==false)||(mail.includes('.')==false)){
+      errors.push("Enter a valid email")
+      c++;
+    }
+    if((status!="none")&&(status!="not ready")&&(status!="featured")){
+      errors.push("Not a valid status")
+      c++;
+    }
+  if(c!=1)
+      return errors;
+    else
+    {
+    var id=request.params.id;
+    var newProducer=request.payload;
+    
         return new Promise((resolve,reject)=>{
             var connection = mysql.createConnection({
                 host     : process.env.DB_HOST,
@@ -239,7 +205,7 @@ else{
               });
               connection.connect();
                connection.query(`UPDATE producer SET producerName='${newProducer.producerName}',
-               	email='${newProducer.email}',
+                email='${newProducer.email}',
                 passwordHash='${newProducer.passwordHash}',
                 twitterName='${newProducer.twitterName}',
                 soundcloudName='${newProducer.soundcloudName}'
